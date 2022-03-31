@@ -65,11 +65,11 @@ func dataSourceGitlabUserRead(d *schema.ResourceData, meta interface{}) error {
 	usernameData, usernameOk := d.GetOk("username")
 
 	if !usernameOk {
-		user, err = client.GetMyUserInfo()
+		user, _, err = client.GetMyUserInfo()
 	} else {
 		username := strings.ToLower(usernameData.(string))
 
-		user, err = client.GetUserInfo(username)
+		user, _, err = client.GetUserInfo(username)
 		if err != nil {
 			return err
 		}

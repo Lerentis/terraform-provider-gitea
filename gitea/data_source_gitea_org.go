@@ -65,7 +65,7 @@ func dataSourceGitlabOrgRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	name := strings.ToLower(nameData.(string))
 
-	org, err = client.GetOrg(name)
+	org, _, err = client.GetOrg(name)
 	if err != nil {
 		return err
 	}

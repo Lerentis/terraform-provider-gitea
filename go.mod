@@ -3,7 +3,7 @@ module code.gitea.io/terraform-provider-gitea
 go 1.17
 
 require (
-	code.gitea.io/sdk/gitea v0.12.0
+	code.gitea.io/sdk/gitea v0.15.1
 	github.com/hashicorp/terraform-plugin-sdk v1.13.0
 )
 
@@ -30,7 +30,7 @@ require (
 	github.com/hashicorp/go-plugin v1.0.1 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.1 // indirect
-	github.com/hashicorp/go-version v1.2.0 // indirect
+	github.com/hashicorp/go-version v1.4.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/hashicorp/hcl v0.0.0-20170504190234-a4b07c25de5f // indirect
 	github.com/hashicorp/hcl/v2 v2.0.0 // indirect
@@ -59,7 +59,7 @@ require (
 	github.com/zclconf/go-cty v1.2.1 // indirect
 	github.com/zclconf/go-cty-yaml v1.0.1 // indirect
 	go.opencensus.io v0.22.0 // indirect
-	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586 // indirect
+	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550 // indirect
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527 // indirect
