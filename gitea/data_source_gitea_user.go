@@ -11,7 +11,7 @@ import (
 
 func dataSourceGiteaUser() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceGitlabUserRead,
+		Read: dataSourceGiteaUserRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:     schema.TypeInt,
@@ -54,7 +54,7 @@ func dataSourceGiteaUser() *schema.Resource {
 	}
 }
 
-func dataSourceGitlabUserRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceGiteaUserRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*gitea.Client)
 
 	var user *gitea.User
