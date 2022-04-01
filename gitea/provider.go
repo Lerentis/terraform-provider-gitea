@@ -68,7 +68,7 @@ func Provider() terraform.ResourceProvider {
 			// "gitea_team":   dataSourceGiteaTeam(),
 			// "gitea_teams":  dataSourceGiteaTeams(),
 			// "gitea_team_members":  dataSourceGiteaTeamMembers(),
-			// "gitea_repo":   dataSourceGiteaRepo(),
+			"gitea_repo": dataSourceGiteaRepo(),
 			// "gitea_repos":  dataSourceGiteaRepos(),
 		},
 

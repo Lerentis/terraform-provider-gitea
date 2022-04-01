@@ -66,6 +66,9 @@ func dataSourceGiteaUserRead(d *schema.ResourceData, meta interface{}) error {
 
 	if !usernameOk {
 		user, _, err = client.GetMyUserInfo()
+		if err != nil {
+			return err
+		}
 	} else {
 		username := strings.ToLower(usernameData.(string))
 
