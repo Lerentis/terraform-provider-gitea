@@ -20,10 +20,6 @@ description: |-
 - `name` (String)
 - `username` (String)
 
-### Optional
-
-- `id` (String) The ID of this resource.
-
 ### Read-Only
 
 - `clone_url` (String)
@@ -34,6 +30,7 @@ description: |-
 - `forks` (Number)
 - `full_name` (String)
 - `html_url` (String)
+- `id` (String) The ID of this resource.
 - `mirror` (Boolean)
 - `open_issue_count` (Number)
 - `permission_admin` (Boolean)

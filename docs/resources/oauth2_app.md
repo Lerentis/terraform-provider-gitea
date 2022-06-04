@@ -22,8 +22,8 @@ Handling [gitea oauth application](https://docs.gitea.io/en-us/oauth2-provider/)
 
 ### Read-Only
 
-- `client_id` (String) OAuth2 client id
-- `client_secret` (String, Sensitive) Oauth2 client secret
+- `client_id` (String) OAuth2 Application client id
+- `client_secret` (String, Sensitive) Oauth2 Application client secret
 - `id` (String) The ID of this resource.
 
 

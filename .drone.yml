@@ -1,0 +1,32 @@
+---
+kind: pipeline
+type: kubernetes
+name: terraform-provider-gitea
+platform:
+  os: linux
+  arch: amd64
+steps:
+  - name: init
+    image: golang:1.18.3-alpine3.16
+    commands:
+      - "go mod download"
+    when:
+      event:
+      - push
+      - pull_request
+  - name: build
+    image: golang:1.18.3-alpine3.16
+    commands:
+      - "make build"
+    when:
+      event:
+      - push
+      - pull_request
+  - name: test
+    image: golang:1.18.3-alpine3.16
+    commands:
+      - "make test"
+    when:
+      event:
+      - push
+      - pull_request
