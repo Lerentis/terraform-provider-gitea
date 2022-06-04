@@ -40,6 +40,18 @@ Handling Repository resources
 - `ignore_whitespace_conflicts` (Boolean)
 - `issue_labels` (String)
 - `license` (String)
+- `migration_clone_addresse` (String)
+- `migration_issue_labels` (Boolean)
+- `migration_lfs` (Boolean)
+- `migration_lfs_endpoint` (String)
+- `migration_milestones` (Boolean)
+- `migration_mirror_interval` (String) valid time units are 'h', 'm', 's'. 0 to disable automatic sync
+- `migration_releases` (Boolean)
+- `migration_service` (String) git/github/gitlab/gitea/gogs
+- `migration_service_auth_password` (String, Sensitive)
+- `migration_service_auth_token` (String, Sensitive)
+- `migration_service_auth_username` (String)
+- `mirror` (Boolean)
 - `private` (Boolean)
 - `readme` (String)
 - `repo_template` (Boolean)

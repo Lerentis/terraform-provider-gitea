@@ -9,30 +9,42 @@ import (
 )
 
 const (
-	repoOwner                 string = "username"
-	repoName                  string = "name"
-	repoDescription           string = "description"
-	repoPrivateFlag           string = "private"
-	repoIssueLabels           string = "issue_labels"
-	repoAutoInit              string = "auto_init"
-	repoTemplate              string = "repo_template"
-	repoGitignores            string = "gitignores"
-	repoLicense               string = "license"
-	repoReadme                string = "readme"
-	repoDefaultBranch         string = "default_branch"
-	repoWebsite               string = "website"
-	repoIssues                string = "has_issues"
-	repoWiki                  string = "has_wiki"
-	repoPrs                   string = "has_pull_requests"
-	repoProjects              string = "has_projects"
-	repoIgnoreWhitespace      string = "ignore_whitespace_conflicts"
-	repoAllowMerge            string = "allow_merge_commits"
-	repoAllowRebase           string = "allow_rebase"
-	repoAllowRebaseMerge      string = "allow_rebase_explicit"
-	repoAllowSquash           string = "allow_squash_merge"
-	repoAchived               string = "archived"
-	repoAllowManualMerge      string = "allow_manual_merge"
-	repoAutodetectManualMerge string = "autodetect_manual_merge"
+	repoOwner                    string = "username"
+	repoName                     string = "name"
+	repoDescription              string = "description"
+	repoPrivateFlag              string = "private"
+	repoIssueLabels              string = "issue_labels"
+	repoAutoInit                 string = "auto_init"
+	repoTemplate                 string = "repo_template"
+	repoGitignores               string = "gitignores"
+	repoLicense                  string = "license"
+	repoReadme                   string = "readme"
+	repoDefaultBranch            string = "default_branch"
+	repoWebsite                  string = "website"
+	repoIssues                   string = "has_issues"
+	repoWiki                     string = "has_wiki"
+	repoPrs                      string = "has_pull_requests"
+	repoProjects                 string = "has_projects"
+	repoIgnoreWhitespace         string = "ignore_whitespace_conflicts"
+	repoAllowMerge               string = "allow_merge_commits"
+	repoAllowRebase              string = "allow_rebase"
+	repoAllowRebaseMerge         string = "allow_rebase_explicit"
+	repoAllowSquash              string = "allow_squash_merge"
+	repoAchived                  string = "archived"
+	repoAllowManualMerge         string = "allow_manual_merge"
+	repoAutodetectManualMerge    string = "autodetect_manual_merge"
+	repoMirror                   string = "mirror"
+	migrationCloneAddress        string = "migration_clone_addresse"
+	migrationService             string = "migration_service"
+	migrationServiceAuthName     string = "migration_service_auth_username"
+	migrationServiceAuthPassword string = "migration_service_auth_password"
+	migrationServiceAuthToken    string = "migration_service_auth_token"
+	migrationMilestones          string = "migration_milestones"
+	migrationReleases            string = "migration_releases"
+	migrationIssueLabels         string = "migration_issue_labels"
+	migrationMirrorInterval      string = "migration_mirror_interval"
+	migrationLFS                 string = "migration_lfs"
+	migrationLFSEndpoint         string = "migration_lfs_endpoint"
 )
 
 func resourceRepoRead(d *schema.ResourceData, meta interface{}) (err error) {
@@ -60,20 +72,55 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 
 	var repo *gitea.Repository
 
-	opts := gitea.CreateRepoOption{
-		Name:          d.Get(repoName).(string),
-		Description:   d.Get(repoDescription).(string),
-		Private:       d.Get(repoPrivateFlag).(bool),
-		IssueLabels:   d.Get(repoIssueLabels).(string),
-		AutoInit:      d.Get(repoAutoInit).(bool),
-		Template:      d.Get(repoTemplate).(bool),
-		Gitignores:    d.Get(repoGitignores).(string),
-		License:       d.Get(repoLicense).(string),
-		Readme:        d.Get(repoReadme).(string),
-		DefaultBranch: d.Get(repoDefaultBranch).(string),
-		TrustModel:    "default",
+	if (d.Get(repoMirror)).(bool) {
+		opts := gitea.MigrateRepoOption{
+			RepoName:       d.Get(repoName).(string),
+			RepoOwner:      d.Get(repoOwner).(string),
+			CloneAddr:      d.Get(migrationCloneAddress).(string),
+			Service:        gitea.GitServiceType(d.Get(migrationService).(string)),
+			Mirror:         d.Get(repoMirror).(bool),
+			Private:        d.Get(repoPrivateFlag).(bool),
+			Description:    d.Get(repoDescription).(string),
+			Wiki:           d.Get(repoWiki).(bool),
+			Milestones:     d.Get(migrationMilestones).(bool),
+			Labels:         d.Get(migrationIssueLabels).(bool),
+			Issues:         d.Get(repoIssues).(bool),
+			PullRequests:   d.Get(repoPrs).(bool),
+			Releases:       d.Get(migrationReleases).(bool),
+			MirrorInterval: d.Get(migrationMirrorInterval).(string),
+			LFS:            d.Get(migrationLFS).(bool),
+			LFSEndpoint:    d.Get(migrationLFSEndpoint).(string),
+		}
+
+		if d.Get(migrationServiceAuthName).(string) != "" {
+			opts.AuthUsername = d.Get(migrationServiceAuthName).(string)
+		}
+		if d.Get(migrationServiceAuthPassword).(string) != "" {
+			opts.AuthPassword = d.Get(migrationServiceAuthPassword).(string)
+		}
+		if d.Get(migrationServiceAuthToken).(string) != "" {
+			opts.AuthToken = d.Get(migrationServiceAuthToken).(string)
+		}
+
+		repo, _, err = client.MigrateRepo(opts)
+
+	} else {
+
+		opts := gitea.CreateRepoOption{
+			Name:          d.Get(repoName).(string),
+			Description:   d.Get(repoDescription).(string),
+			Private:       d.Get(repoPrivateFlag).(bool),
+			IssueLabels:   d.Get(repoIssueLabels).(string),
+			AutoInit:      d.Get(repoAutoInit).(bool),
+			Template:      d.Get(repoTemplate).(bool),
+			Gitignores:    d.Get(repoGitignores).(string),
+			License:       d.Get(repoLicense).(string),
+			Readme:        d.Get(repoReadme).(string),
+			DefaultBranch: d.Get(repoDefaultBranch).(string),
+			TrustModel:    "default",
+		}
+		repo, _, err = client.CreateRepo(opts)
 	}
-	repo, _, err = client.CreateRepo(opts)
 
 	if err != nil {
 		return
@@ -91,7 +138,7 @@ func resourceRepoUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 
 	var name string = d.Get(repoName).(string)
 	var description string = d.Get(repoDescription).(string)
-	var website string = d.Get(repoDescription).(string)
+	var website string = d.Get(repoWebsite).(string)
 	var private bool = d.Get(repoPrivateFlag).(bool)
 	var template bool = d.Get(repoTemplate).(bool)
 	var hasIssues bool = d.Get(repoIssues).(bool)
@@ -104,7 +151,6 @@ func resourceRepoUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	var allowRebase bool = d.Get(repoAllowRebase).(bool)
 	var allowRebaseMerge bool = d.Get(repoAllowRebaseMerge).(bool)
 	var allowSquash bool = d.Get(repoAllowSquash).(bool)
-	var archived bool = d.Get(repoAchived).(bool)
 	var allowManualMerge bool = d.Get(repoAllowManualMerge).(bool)
 	var autodetectManualMerge bool = d.Get(repoAutodetectManualMerge).(bool)
 
@@ -124,9 +170,16 @@ func resourceRepoUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 		AllowRebase:               &allowRebase,
 		AllowRebaseMerge:          &allowRebaseMerge,
 		AllowSquash:               &allowSquash,
-		Archived:                  &archived,
 		AllowManualMerge:          &allowManualMerge,
 		AutodetectManualMerge:     &autodetectManualMerge,
+	}
+
+	if d.Get(repoMirror).(bool) {
+		var mirrorInterval string = d.Get(migrationMirrorInterval).(string)
+		opts.MirrorInterval = &mirrorInterval
+	} else {
+		var archived bool = d.Get(repoAchived).(bool)
+		opts.Archived = &archived
 	}
 
 	repo, _, err = client.EditRepo(d.Get(repoOwner).(string), d.Get(repoName).(string), opts)
@@ -153,7 +206,6 @@ func setRepoResourceData(repo *gitea.Repository, d *schema.ResourceData) (err er
 	d.Set("name", repo.Name)
 	d.Set("description", repo.Description)
 	d.Set("full_name", repo.FullName)
-	d.Set("description", repo.Description)
 	d.Set("private", repo.Private)
 	d.Set("fork", repo.Fork)
 	d.Set("mirror", repo.Mirror)
@@ -347,6 +399,81 @@ func resourceGiteaRepository() *schema.Resource {
 				Required: false,
 				Optional: true,
 				Default:  true,
+			},
+			"mirror": {
+				Type:     schema.TypeBool,
+				Required: false,
+				Optional: true,
+				Default:  false,
+			},
+			"migration_clone_addresse": {
+				Type:     schema.TypeString,
+				Required: false,
+				Optional: true,
+				ForceNew: true,
+			},
+			"migration_service": {
+				Type:        schema.TypeString,
+				Required:    false,
+				ForceNew:    true,
+				Optional:    true,
+				Description: "git/github/gitlab/gitea/gogs",
+			},
+			"migration_service_auth_username": {
+				Type:     schema.TypeString,
+				Required: false,
+				Optional: true,
+				Default:  "",
+			},
+			"migration_service_auth_password": {
+				Type:      schema.TypeString,
+				Required:  false,
+				Optional:  true,
+				Sensitive: true,
+				Default:   "",
+			},
+			"migration_service_auth_token": {
+				Type:      schema.TypeString,
+				Required:  false,
+				Optional:  true,
+				Sensitive: true,
+				Default:   "",
+			},
+			"migration_milestones": {
+				Type:     schema.TypeBool,
+				Required: false,
+				Optional: true,
+				Default:  true,
+			},
+			"migration_releases": {
+				Type:     schema.TypeBool,
+				Required: false,
+				Optional: true,
+				Default:  true,
+			},
+			"migration_issue_labels": {
+				Type:     schema.TypeBool,
+				Required: false,
+				Optional: true,
+				Default:  true,
+			},
+			"migration_mirror_interval": {
+				Type:        schema.TypeString,
+				Required:    false,
+				Optional:    true,
+				Default:     "8h0m0s",
+				Description: "valid time units are 'h', 'm', 's'. 0 to disable automatic sync",
+			},
+			"migration_lfs": {
+				Type:     schema.TypeBool,
+				Required: false,
+				Optional: true,
+			},
+			"migration_lfs_endpoint": {
+				Type:     schema.TypeString,
+				Required: false,
+				Optional: true,
+				Default:  "",
 			},
 		},
 		Description: "Handling Repository resources",
