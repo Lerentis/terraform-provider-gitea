@@ -17,6 +17,7 @@ steps:
   - name: build
     image: golang:1.18.3-alpine3.16
     commands:
+      - "apk add --update --no-cache make"
       - "make build"
     when:
       event:
@@ -25,6 +26,7 @@ steps:
   - name: test
     image: golang:1.18.3-alpine3.16
     commands:
+      - "apk add --update --no-cache make"
       - "make test"
     when:
       event:
