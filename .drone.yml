@@ -44,8 +44,8 @@ steps:
   - name: release
     image: goreleaser/goreleaser
     environment:
-      GITHUB_TOKEN:
-        from_secret: github_token
+      GITEA_TOKEN:
+        from_secret: gitea_token
     commands:
       - goreleaser release
     when:
