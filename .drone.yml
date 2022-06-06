@@ -18,7 +18,7 @@ steps:
   - name: build
     image: goreleaser/goreleaser
     commands:
-      - goreleaser build
+      - goreleaser build --snapshot
     when:
       event:
       - push
