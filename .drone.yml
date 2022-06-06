@@ -6,6 +6,15 @@ platform:
   os: linux
   arch: amd64
 steps:
+  - name: fetch
+    image: docker:git
+    commands:
+      - git fetch --tags
+    when:
+      event:
+      - push
+      - pull_request
+      - tag
   - name: init
     image: golang:1.18.3-alpine3.16
     commands:
@@ -32,3 +41,12 @@ steps:
       event:
       - push
       - pull_request
+  - name: release
+    image: goreleaser/goreleaser
+    environment:
+      GITHUB_TOKEN:
+        from_secret: github_token
+    commands:
+      - goreleaser release
+    when:
+      event: tag
