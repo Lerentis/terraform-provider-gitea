@@ -23,6 +23,10 @@ steps:
       event:
       - push
       - pull_request
+    resources:
+      limits:
+        cpu: 500
+        memory: 1024MiB
   - name: test
     image: golang:1.18.3-alpine3.16
     commands:
@@ -39,5 +43,9 @@ steps:
         from_secret: gitea_token
     commands:
       - goreleaser release
+    resources:
+      limits:
+        cpu: 500
+        memory: 1024MiB
     when:
       event: tag
