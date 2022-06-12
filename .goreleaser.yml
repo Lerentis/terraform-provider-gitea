@@ -51,9 +51,6 @@ signs:
       - "--detach-sign"
       - "${artifact}"
 release:
-  gitea:
-    owner: lerentis
-    name: terraform-provider-gitea
   extra_files:
     - glob: 'terraform-registry-manifest.json'
       name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
