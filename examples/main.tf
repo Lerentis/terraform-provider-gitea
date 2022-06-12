@@ -16,3 +16,12 @@ resource "gitea_repository" "mirror" {
   migration_service            = "gitea"
   migration_service_auth_token = var.gitea_mirror_token
 }
+
+resource "gitea_org" "test_org" {
+  name = "test-org"
+}
+
+resource "gitea_repository" "org_repo" {
+  username = gitea_org.test_org.name
+  name = "org-test-repo"
+}

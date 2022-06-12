@@ -51,15 +51,21 @@ func resourceRepoRead(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
 	id, err := strconv.ParseInt(d.Id(), 10, 64)
+	var resp *gitea.Response
 
 	if err != nil {
 		return err
 	}
 
-	repo, _, err := client.GetRepoByID(id)
+	repo, resp, err := client.GetRepoByID(id)
 
 	if err != nil {
-		return err
+		if resp.StatusCode == 404 {
+			d.SetId("")
+			return nil
+		} else {
+			return err
+		}
 	}
 
 	err = setRepoResourceData(repo, d)
@@ -71,6 +77,16 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
 	var repo *gitea.Repository
+	var resp *gitea.Response
+	var orgRepo bool
+
+	_, resp, err = client.GetOrg(d.Get(repoOwner).(string))
+
+	if resp.StatusCode == 404 {
+		orgRepo = false
+	} else {
+		orgRepo = true
+	}
 
 	if (d.Get(repoMirror)).(bool) {
 		opts := gitea.MigrateRepoOption{
@@ -105,7 +121,6 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 		repo, _, err = client.MigrateRepo(opts)
 
 	} else {
-
 		opts := gitea.CreateRepoOption{
 			Name:          d.Get(repoName).(string),
 			Description:   d.Get(repoDescription).(string),
@@ -119,7 +134,12 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 			DefaultBranch: d.Get(repoDefaultBranch).(string),
 			TrustModel:    "default",
 		}
-		repo, _, err = client.CreateRepo(opts)
+
+		if orgRepo {
+			repo, _, err = client.CreateOrgRepo(d.Get(repoOwner).(string), opts)
+		} else {
+			repo, _, err = client.CreateRepo(opts)
+		}
 	}
 
 	if err != nil {
