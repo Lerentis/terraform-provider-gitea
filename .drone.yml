@@ -25,7 +25,7 @@ steps:
       - pull_request
     resources:
       limits:
-        cpu: 500
+        cpu: 1000
         memory: 1024MiB
   - name: test
     image: golang:1.18.3-alpine3.16
@@ -45,7 +45,8 @@ steps:
       - goreleaser release
     resources:
       limits:
-        cpu: 500
+        cpu: 1000
         memory: 1024MiB
     when:
-      event: tag
+      event: 
+        - tag
