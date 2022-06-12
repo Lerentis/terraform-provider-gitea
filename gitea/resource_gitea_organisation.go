@@ -139,24 +139,28 @@ func resourceGiteaOrg() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: "The name of the organisation without spaces.",
 			},
 			"full_name": {
-				Type:     schema.TypeString,
-				Required: false,
-				Optional: true,
+				Type:        schema.TypeString,
+				Required:    false,
+				Optional:    true,
+				Description: "The display name of the organisation. Defaults to the value of `name`.",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Required: false,
-				Optional: true,
+				Type:        schema.TypeString,
+				Required:    false,
+				Optional:    true,
+				Description: "A description of this organisation.",
 			},
 			"website": {
-				Type:     schema.TypeString,
-				Required: false,
-				Optional: true,
+				Type:        schema.TypeString,
+				Required:    false,
+				Optional:    true,
+				Description: "A link to a website with more information about this organisation.",
 			},
 			"location": {
 				Type:     schema.TypeString,
@@ -175,12 +179,14 @@ func resourceGiteaOrg() *schema.Resource {
 				Computed: true,
 			},
 			"visibility": {
-				Type:     schema.TypeString,
-				Required: false,
-				Optional: true,
-				Default:  "public",
+				Type:        schema.TypeString,
+				Required:    false,
+				Optional:    true,
+				Default:     "public",
+				Description: "Flag is this organisation should be publicly visible or not.",
 			},
 		},
-		Description: "Handling Ogranisation resources",
+		Description: "`gitea_org` manages a gitea organisation.\n\n" +
+			"Organisations are a way to group repositories and abstract permission management in a gitea instance.",
 	}
 }
