@@ -41,7 +41,14 @@ steps:
     environment:
       GITEA_TOKEN:
         from_secret: gitea_token
+      GPG_PRIVATE_KEY:
+        from_secret: GPG_PRIVATE_KEY
+      GPG_FINGERPRINT:
+        from_secret: GPG_FINGERPRINT
     commands:
+      - apk add gpg-agent
+      - gpg-agent --daemon --default-cache-ttl 7200
+      - echo $GPG_PRIVATE_KEY | gpg --import --batch --no-tty
       - goreleaser release
     resources:
       limits:
