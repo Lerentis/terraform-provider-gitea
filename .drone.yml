@@ -48,7 +48,7 @@ steps:
     commands:
       - apk add gpg-agent
       - gpg-agent --daemon --default-cache-ttl 7200
-      - echo $GPG_PRIVATE_KEY | gpg --import --batch --no-tty
+      - echo $GPG_PRIVATE_KEY_BASE64 | base64 -d | gpg --import --batch --no-tty
       - goreleaser release
     resources:
       limits:
