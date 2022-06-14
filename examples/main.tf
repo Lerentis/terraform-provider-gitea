@@ -23,5 +23,18 @@ resource "gitea_org" "test_org" {
 
 resource "gitea_repository" "org_repo" {
   username = gitea_org.test_org.name
-  name = "org-test-repo"
+  name     = "org-test-repo"
+}
+
+data "gitea_user" "me" {
+  username = "lerentis"
+}
+
+resource "gitea_user" "test" {
+  username             = "test"
+  login_name           = "test"
+  password             = "Geheim1!"
+  email                = "test@user.dev"
+  must_change_password = false
+  admin                = true
 }

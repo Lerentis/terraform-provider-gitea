@@ -76,7 +76,7 @@ func Provider() terraform.ResourceProvider {
 			"gitea_org": resourceGiteaOrg(),
 			// "gitea_team": resourceGiteaTeam(),
 			// "gitea_repo": resourceGiteaRepo(),
-			// "gitea_user": resourceGiteaUser(),
+			"gitea_user":       resourceGiteaUser(),
 			"gitea_oauth2_app": resourceGiteaOauthApp(),
 			"gitea_repository": resourceGiteaRepository(),
 		},

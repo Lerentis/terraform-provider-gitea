@@ -17,8 +17,6 @@ const (
 	RepoAdminChangeTeamAccess string = "repo_admin_change_team_access"
 )
 
-type VisibleType string
-
 func resourceOrgRead(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
@@ -97,7 +95,7 @@ func resourceOrgUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	return
 }
 
-func respurceOrgDelete(d *schema.ResourceData, meta interface{}) (err error) {
+func resourceOrgDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
 	var resp *gitea.Response
@@ -133,7 +131,7 @@ func resourceGiteaOrg() *schema.Resource {
 		Read:   resourceOrgRead,
 		Create: resourceOrgCreate,
 		Update: resourceOrgUpdate,
-		Delete: respurceOrgDelete,
+		Delete: resourceOrgDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
