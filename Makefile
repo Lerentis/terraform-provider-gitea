@@ -3,7 +3,7 @@ GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 
 GOFMT ?= gofmt -s
 
-VERSION = 0.4.0
+VERSION = 0.5.0
 
 test: fmt-check
 	go test -i $(TEST) || exit 1
@@ -37,3 +37,5 @@ install: build
 	@echo ~/.terraform.d/plugins/terraform.local/lerentis/gitea/${VERSION}/linux_amd64/terraform-provider-gitea_${VERSION}
 	@mkdir -p ~/.terraform.d/plugins/terraform.local/lerentis/gitea/${VERSION}/linux_amd64
 	@mv terraform-provider-gitea_${VERSION} ~/.terraform.d/plugins/terraform.local/lerentis/gitea/${VERSION}/linux_amd64/terraform-provider-gitea_${VERSION}
+doc:
+	tfplugindocs

@@ -38,3 +38,11 @@ resource "gitea_user" "test" {
   must_change_password = false
   admin                = true
 }
+
+
+resource "gitea_public_key" "test_user_key" {
+  title     = "test"
+  key       = file("${path.module}/resources/gitea_public_key/id_ed25519.pub")
+  read_only = true
+  username  = gitea_user.test.username
+}
