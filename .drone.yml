@@ -45,6 +45,8 @@ steps:
         from_secret: GPG_PRIVATE_KEY
       GPG_FINGERPRINT:
         from_secret: GPG_FINGERPRINT
+      GPG_PRIVATE_KEY_BASE64:
+        from_secret: GPG_PRIVATE_KEY_BASE64
     commands:
       - apk add gpg-agent
       - gpg-agent --daemon --default-cache-ttl 7200
