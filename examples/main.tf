@@ -46,3 +46,11 @@ resource "gitea_public_key" "test_user_key" {
   read_only = true
   username  = gitea_user.test.username
 }
+
+
+resource "gitea_team" "test_team" {
+  name = "Devs"
+  organisation = gitea_org.test_org.name
+  description = "Devs of Test Org"
+  permission = "write"
+}
