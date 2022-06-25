@@ -196,7 +196,6 @@ func resourceUserDelete(d *schema.ResourceData, meta interface{}) (err error) {
 
 func setUserResourceData(user *gitea.User, d *schema.ResourceData) (err error) {
 	d.SetId(fmt.Sprintf("%d", user.ID))
-	d.Set("id", user.ID)
 	d.Set(userName, user.UserName)
 	d.Set(userEmail, user.Email)
 	d.Set(userFullName, user.FullName)

@@ -80,6 +80,7 @@ func Provider() terraform.ResourceProvider {
 			"gitea_oauth2_app": resourceGiteaOauthApp(),
 			"gitea_repository": resourceGiteaRepository(),
 			"gitea_public_key": resourceGiteaPublicKey(),
+			"gitea_team":       resourceGiteaTeam(),
 		},
 
 		ConfigureFunc: providerConfigure,
