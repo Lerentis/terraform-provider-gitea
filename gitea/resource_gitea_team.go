@@ -17,6 +17,7 @@ const (
 	TeamCreateRepoFlag      string = "can_create_repos"
 	TeamIncludeAllReposFlag string = "include_all_repositories"
 	TeamUnits               string = "units"
+	TeamMembers             string = "members"
 )
 
 func resourceTeamRead(d *schema.ResourceData, meta interface{}) (err error) {
@@ -89,6 +90,17 @@ func resourceTeamCreate(d *schema.ResourceData, meta interface{}) (err error) {
 		return
 	}
 
+	users := d.Get(TeamMembers).([]interface{})
+
+	for _, user := range users {
+		if user != "" {
+			_, err = client.AddTeamMember(team.ID, user.(string))
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	err = setTeamResourceData(team, d)
 
 	return
@@ -158,6 +170,17 @@ func resourceTeamUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 		return err
 	}
 
+	users := d.Get(TeamMembers).([]interface{})
+
+	for _, user := range users {
+		if user != "" {
+			_, err = client.AddTeamMember(team.ID, user.(string))
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	team, _, _ = client.GetTeam(id)
 
 	err = setTeamResourceData(team, d)
@@ -194,6 +217,7 @@ func setTeamResourceData(team *gitea.Team, d *schema.ResourceData) (err error) {
 	d.Set(TeamIncludeAllReposFlag, team.IncludesAllRepositories)
 	d.Set(TeamUnits, d.Get(TeamUnits).(string))
 	d.Set(TeamOrg, d.Get(TeamOrg).(string))
+	d.Set(TeamMembers, d.Get(TeamMembers))
 	return
 }
 
@@ -255,6 +279,16 @@ func resourceGiteaTeam() *schema.Resource {
 				Default:  "[repo.code, repo.issues, repo.ext_issues, repo.wiki, repo.pulls, repo.releases, repo.projects, repo.ext_wiki]",
 				Description: "List of types of Repositories that should be allowed to be created from Team members.\n" +
 					"Can be `repo.code`, `repo.issues`, `repo.ext_issues`, `repo.wiki`, `repo.pulls`, `repo.releases`, `repo.projects` and/or `repo.ext_wiki`",
+			},
+			"members": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional:    true,
+				Required:    false,
+				Computed:    true,
+				Description: "List of Users that should be part of this team",
 			},
 		},
 		Description: "`gitea_team` manages Team that are part of an organisation.",

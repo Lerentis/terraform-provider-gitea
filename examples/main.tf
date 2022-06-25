@@ -49,8 +49,9 @@ resource "gitea_public_key" "test_user_key" {
 
 
 resource "gitea_team" "test_team" {
-  name = "Devs"
+  name         = "Devs"
   organisation = gitea_org.test_org.name
-  description = "Devs of Test Org"
-  permission = "write"
+  description  = "Devs of Test Org"
+  permission   = "write"
+  members      = [gitea_user.test.username]
 }
