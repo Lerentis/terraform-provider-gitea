@@ -91,9 +91,9 @@ func resourcePublicKeyDelete(d *schema.ResourceData, meta interface{}) (err erro
 func setPublicKeyResourceData(pubKey *gitea.PublicKey, d *schema.ResourceData) (err error) {
 	d.SetId(fmt.Sprintf("%d", pubKey.ID))
 	d.Set(PublicKeyUser, d.Get(PublicKeyUser).(string))
-	d.Set(PublicKey, pubKey.Key)
+	d.Set(PublicKey, d.Get(PublicKey).(string))
 	d.Set(PublicKeyTitle, pubKey.Title)
-	d.Set(PublicKeyReadOnlyFlag, pubKey.ReadOnly)
+	d.Set(PublicKeyReadOnlyFlag, d.Get(PublicKeyReadOnlyFlag).(bool))
 	d.Set(PublicKeyCreated, pubKey.Created)
 	d.Set(PublicKeyFingerprint, pubKey.Fingerprint)
 	d.Set(PublicKeyType, pubKey.KeyType)
