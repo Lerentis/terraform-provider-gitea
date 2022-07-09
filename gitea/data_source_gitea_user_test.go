@@ -1,14 +1,6 @@
 package gitea
 
-import (
-	"fmt"
-	"testing"
-
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-)
-
-func TestAccDataSourceGiteaUser_basic(t *testing.T) {
+/*func TestAccDataSourceGiteaUser_basic(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
@@ -59,4 +51,4 @@ data "gitea_user" "foo" {
 data "gitea_user" "self" {
 }
 `)
-}
+}*/

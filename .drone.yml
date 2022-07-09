@@ -15,23 +15,27 @@ steps:
       - push
       - pull_request
       - tag
-  - name: build
-    image: goreleaser/goreleaser
+  - name: backend
+    image: gitea/gitea:1.16.8
+    detach: true
     commands:
-      - goreleaser build --snapshot
-    when:
-      event:
-      - push
-      - pull_request
-    resources:
-      limits:
-        cpu: 1000
-        memory: 1024MiB
+      - su git
+      - gitea admin user create --username test --password $GITEA_PASSWORD --must-change-password false --admin --email test@mail.org
+      - /usr/bin/entrypoint /bin/s6-svscan /etc/s6
+    environment:
+      GITEA_PASSWORD:
+        from_secret: GITEA_PASSWORD
   - name: test
     image: golang:1.18.3-alpine3.16
     commands:
       - "apk add --update --no-cache make build-base"
       - "make test"
+    environment:
+      TF_ACC: 1
+      GITEA_BASE_URL: "http://localhost:3000"
+      GITEA_USERNAME: test
+      GITEA_PASSWORD:
+        from_secret: GITEA_PASSWORD
     when:
       event:
       - push
