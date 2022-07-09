@@ -24,18 +24,18 @@ steps:
       - /usr/bin/entrypoint /bin/s6-svscan /etc/s6
     environment:
       GITEA_PASSWORD:
-        from_secret: GITEA_PASSWORD
+        from_secret: GITEA_TEST_PASSWORD
   - name: test
     image: golang:1.18.3-alpine3.16
     commands:
       - "apk add --update --no-cache make build-base"
-      - "make test"
+      - "make testacc"
     environment:
       TF_ACC: 1
       GITEA_BASE_URL: "http://localhost:3000"
       GITEA_USERNAME: test
       GITEA_PASSWORD:
-        from_secret: GITEA_PASSWORD
+        from_secret: GITEA_TEST_PASSWORD
     when:
       event:
       - push
