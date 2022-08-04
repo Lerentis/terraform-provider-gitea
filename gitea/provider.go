@@ -118,5 +118,8 @@ func validateAPIURLVersion(value interface{}, key string) (ws []string, es []err
 	if strings.HasSuffix(v, "/api/v1") || strings.HasSuffix(v, "/api/v1/") {
 		es = append(es, fmt.Errorf("terraform-gitea-provider base URL format is incorrect; Please leave out API Path %s", v))
 	}
+	if strings.Contains(v, "localhost") && strings.Contains(v, ".") {
+		es = append(es, fmt.Errorf("terraform-gitea-provider base URL violates RFC 2606; Please do not define a subdomain for localhost!"))
+	}
 	return
 }
