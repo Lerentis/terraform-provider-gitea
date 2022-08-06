@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"code.gitea.io/sdk/gitea"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/logging"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
 )
 
 // Config is per-provider, specifies where to connect to gitea
