@@ -17,20 +17,60 @@ const (
 	RepoAdminChangeTeamAccess string = "repo_admin_change_team_access"
 )
 
+// might come in handy if we want to stick to numeric IDs
+/*func searchOrgByClientId(c *gitea.Client, id int64) (res *gitea.Organization, err error) {
+
+	page := 1
+
+	for {
+		orgs, _, err := c.AdminListOrgs(gitea.AdminListOrgsOptions{
+			ListOptions: gitea.ListOptions{
+				Page:     page,
+				PageSize: 50,
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if len(orgs) == 0 {
+			return nil, fmt.Errorf("Organisation with ID %d could not be found", id)
+		}
+
+		for _, org := range orgs {
+			if org.ID == id {
+				return org, nil
+			}
+		}
+
+		page += 1
+	}
+}*/
+
 func resourceOrgRead(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
 	var org *gitea.Organization
 	var resp *gitea.Response
+	var tmpOrgName string
 
-	org, resp, err = client.GetOrg(d.Get(orgName).(string))
+	if d.Get(orgName).(string) == "" {
+		// terraform import as only access to the ID, therfore we set the ID to the name
+		tmpOrgName = d.Id()
+	} else {
+		tmpOrgName = d.Get(orgName).(string)
+	}
+
+	org, resp, err = client.GetOrg(tmpOrgName)
 
 	if err != nil {
-		if resp.StatusCode == 404 {
-			d.SetId("")
-			return nil
+		if resp != nil {
+			if resp.StatusCode == 404 {
+				d.SetId("")
+				return
+			}
 		} else {
-			return err
+			return fmt.Errorf("Error response from client: %s\nOrg Name %s", err, tmpOrgName)
 		}
 	}
 
@@ -114,7 +154,7 @@ func resourceOrgDelete(d *schema.ResourceData, meta interface{}) (err error) {
 }
 
 func setOrgResourceData(org *gitea.Organization, d *schema.ResourceData) (err error) {
-	d.SetId(fmt.Sprintf("%d", org.ID))
+	d.SetId(org.UserName)
 	d.Set("name", org.UserName)
 	d.Set("full_name", org.FullName)
 	d.Set("avatar_url", org.AvatarURL)
@@ -133,7 +173,7 @@ func resourceGiteaOrg() *schema.Resource {
 		Update: resourceOrgUpdate,
 		Delete: resourceOrgDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {

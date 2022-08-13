@@ -18,7 +18,8 @@ resource "gitea_repository" "mirror" {
 }
 
 resource "gitea_org" "test_org" {
-  name = "test-org"
+  name        = "test-org"
+  description = "test description"
 }
 
 resource "gitea_repository" "org_repo" {
