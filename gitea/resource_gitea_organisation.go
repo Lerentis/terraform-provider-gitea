@@ -2,6 +2,7 @@ package gitea
 
 import (
 	"fmt"
+	"strconv"
 
 	"code.gitea.io/sdk/gitea"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -18,7 +19,7 @@ const (
 )
 
 // might come in handy if we want to stick to numeric IDs
-/*func searchOrgByClientId(c *gitea.Client, id int64) (res *gitea.Organization, err error) {
+func searchOrgByClientId(c *gitea.Client, id int64) (res *gitea.Organization, err error) {
 
 	page := 1
 
@@ -45,33 +46,19 @@ const (
 
 		page += 1
 	}
-}*/
+}
 
 func resourceOrgRead(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
 	var org *gitea.Organization
-	var resp *gitea.Response
-	var tmpOrgName string
 
-	if d.Get(orgName).(string) == "" {
-		// terraform import as only access to the ID, therfore we set the ID to the name
-		tmpOrgName = d.Id()
-	} else {
-		tmpOrgName = d.Get(orgName).(string)
-	}
+	id, err := strconv.ParseInt(d.Id(), 10, 64)
 
-	org, resp, err = client.GetOrg(tmpOrgName)
+	org, err = searchOrgByClientId(client, id)
 
 	if err != nil {
-		if resp != nil {
-			if resp.StatusCode == 404 {
-				d.SetId("")
-				return
-			}
-		} else {
-			return fmt.Errorf("Error response from client: %s\nOrg Name %s", err, tmpOrgName)
-		}
+		return err
 	}
 
 	err = setOrgResourceData(org, d)
@@ -154,7 +141,7 @@ func resourceOrgDelete(d *schema.ResourceData, meta interface{}) (err error) {
 }
 
 func setOrgResourceData(org *gitea.Organization, d *schema.ResourceData) (err error) {
-	d.SetId(org.UserName)
+	d.SetId(fmt.Sprintf("%d", org.ID))
 	d.Set("name", org.UserName)
 	d.Set("full_name", org.FullName)
 	d.Set("avatar_url", org.AvatarURL)
