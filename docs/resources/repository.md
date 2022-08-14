@@ -72,7 +72,8 @@ Need to exist in the gitea instance
 Need to exist in the gitea instance
 - `license` (String) The license under which the source code of this repository should be.
 Need to exist in the gitea instance
-- `migration_clone_addresse` (String)
+- `migration_clone_address` (String)
+- `migration_clone_addresse` (String) DEPRECATED in favor of `migration_clone_address`
 - `migration_issue_labels` (Boolean)
 - `migration_lfs` (Boolean)
 - `migration_lfs_endpoint` (String)

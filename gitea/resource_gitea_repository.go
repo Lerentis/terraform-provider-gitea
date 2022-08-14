@@ -34,7 +34,8 @@ const (
 	repoAllowManualMerge         string = "allow_manual_merge"
 	repoAutodetectManualMerge    string = "autodetect_manual_merge"
 	repoMirror                   string = "mirror"
-	migrationCloneAddress        string = "migration_clone_addresse"
+	migrationCloneAddresse       string = "migration_clone_addresse"
+	migrationCloneAddress        string = "migration_clone_address"
 	migrationService             string = "migration_service"
 	migrationServiceAuthName     string = "migration_service_auth_username"
 	migrationServiceAuthPassword string = "migration_service_auth_password"
@@ -89,10 +90,18 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	}
 
 	if (d.Get(repoMirror)).(bool) {
+
+		var cloneAddr string
+		if d.Get(migrationCloneAddresse).(string) != "" {
+			cloneAddr = d.Get(migrationCloneAddresse).(string)
+		} else {
+			cloneAddr = d.Get(migrationCloneAddress).(string)
+		}
+
 		opts := gitea.MigrateRepoOption{
 			RepoName:       d.Get(repoName).(string),
 			RepoOwner:      d.Get(repoOwner).(string),
-			CloneAddr:      d.Get(migrationCloneAddress).(string),
+			CloneAddr:      cloneAddr,
 			Service:        gitea.GitServiceType(d.Get(migrationService).(string)),
 			Mirror:         d.Get(repoMirror).(bool),
 			Private:        d.Get(repoPrivateFlag).(bool),
@@ -445,6 +454,13 @@ func resourceGiteaRepository() *schema.Resource {
 				Default:  false,
 			},
 			"migration_clone_addresse": {
+				Type:        schema.TypeString,
+				Required:    false,
+				Optional:    true,
+				ForceNew:    true,
+				Description: "DEPRECATED in favor of `migration_clone_address`",
+			},
+			"migration_clone_address": {
 				Type:     schema.TypeString,
 				Required: false,
 				Optional: true,
