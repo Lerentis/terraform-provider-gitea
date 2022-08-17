@@ -3,7 +3,7 @@ GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 
 GOFMT ?= gofmt -s
 
-VERSION = 0.7.3
+VERSION = 0.7.4
 
 test: fmt-check
 	go test -i $(TEST) || exit 1

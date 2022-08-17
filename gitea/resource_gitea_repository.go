@@ -232,6 +232,7 @@ func respurceRepoDelete(d *schema.ResourceData, meta interface{}) (err error) {
 
 func setRepoResourceData(repo *gitea.Repository, d *schema.ResourceData) (err error) {
 	d.SetId(fmt.Sprintf("%d", repo.ID))
+	d.Set("username", repo.Owner.UserName)
 	d.Set("name", repo.Name)
 	d.Set("description", repo.Description)
 	d.Set("full_name", repo.FullName)
@@ -248,8 +249,8 @@ func setRepoResourceData(repo *gitea.Repository, d *schema.ResourceData) (err er
 	d.Set("watchers", repo.Watchers)
 	d.Set("open_issue_count", repo.OpenIssues)
 	d.Set("default_branch", repo.DefaultBranch)
-	d.Set("created", repo.Created)
-	d.Set("updated", repo.Updated)
+	d.Set("created", repo.Created.String())
+	d.Set("updated", repo.Updated.String())
 	d.Set("permission_admin", repo.Permissions.Admin)
 	d.Set("permission_push", repo.Permissions.Push)
 	d.Set("permission_pull", repo.Permissions.Pull)
@@ -264,7 +265,7 @@ func resourceGiteaRepository() *schema.Resource {
 		Update: resourceRepoUpdate,
 		Delete: respurceRepoDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"username": {
