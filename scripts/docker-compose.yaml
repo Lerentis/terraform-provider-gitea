@@ -11,6 +11,7 @@ services:
     environment:
       - USER_UID=1000
       - USER_GID=1000
+      - DISABLE_GIT_HOOKS=false
     restart: always
     networks:
       - gitea

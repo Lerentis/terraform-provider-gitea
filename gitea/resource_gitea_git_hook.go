@@ -110,6 +110,11 @@ func resourceGiteaGitHook() *schema.Resource {
 				Description: "Content of the git hook",
 			},
 		},
-		Description: "`gitea_git_hook` manages git hooks on a repository.",
+		Description: "`gitea_git_hook` manages git hooks on a repository.\n" +
+			"import is currently not supported\n\n" +
+			"WARNING: using this resource requires to enable server side hooks" +
+			"which are known to cause [security issues](https://github.com/go-gitea/gitea/pull/13058)!\n\n" +
+			"if you want to procede, you need to enable server side hooks as stated" +
+			" [here](https://docs.gitea.io/en-us/config-cheat-sheet/#security-security)",
 	}
 }

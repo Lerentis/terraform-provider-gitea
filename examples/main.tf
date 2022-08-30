@@ -56,3 +56,18 @@ resource "gitea_team" "test_team" {
   permission   = "write"
   members      = [gitea_user.test.username]
 }
+
+resource "gitea_team" "admin_team" {
+  name         = "Admins"
+  organisation = gitea_org.test_org.name
+  description  = "Admins of Test Org"
+  permission   = "admin"
+  members      = [data.gitea_user.me.username]
+}
+
+resource "gitea_git_hook" "org_repo_pre_receive" {
+  name    = "pre-receive"
+  user    = gitea_org.test_org.name
+  repo    = gitea_repository.org_repo.name
+  content = file("${path.module}/pre-receive.sh")
+}
