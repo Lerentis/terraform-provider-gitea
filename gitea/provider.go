@@ -72,12 +72,13 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"gitea_org": resourceGiteaOrg(),
-			// "gitea_team": resourceGiteaTeam(),
-			// "gitea_repo": resourceGiteaRepo(),
+			"gitea_org":        resourceGiteaOrg(),
+			// "gitea_team":       resourceGiteaTeam(),
+			// "gitea_repo":       resourceGiteaRepo(),
 			"gitea_user":       resourceGiteaUser(),
 			"gitea_oauth2_app": resourceGiteaOauthApp(),
 			"gitea_repository": resourceGiteaRepository(),
+			"gitea_fork":       resourceGiteaFork(),
 			"gitea_public_key": resourceGiteaPublicKey(),
 			"gitea_team":       resourceGiteaTeam(),
 			"gitea_git_hook":   resourceGiteaGitHook(),
