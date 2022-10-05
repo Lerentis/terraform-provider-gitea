@@ -72,7 +72,7 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"gitea_org":        resourceGiteaOrg(),
+			"gitea_org": resourceGiteaOrg(),
 			// "gitea_team":       resourceGiteaTeam(),
 			// "gitea_repo":       resourceGiteaRepo(),
 			"gitea_user":       resourceGiteaUser(),
