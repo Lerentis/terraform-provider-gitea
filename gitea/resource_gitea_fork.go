@@ -3,14 +3,15 @@ package gitea
 import (
 	"fmt"
 	"strconv"
+
 	"code.gitea.io/sdk/gitea"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 const (
-	forkOwner                    string = "owner"
-	forkRepo                     string = "repo"
-	forkOrganization             string = "organization"
+	forkOwner        string = "owner"
+	forkRepo         string = "repo"
+	forkOrganization string = "organization"
 )
 
 func resourceForkCreate(d *schema.ResourceData, meta interface{}) (err error) {
@@ -24,8 +25,8 @@ func resourceForkCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	}
 
 	repo, _, err := client.CreateFork(d.Get(forkOwner).(string),
-	                                  d.Get(forkRepo).(string),
-	                                  opts)
+		d.Get(forkRepo).(string),
+		opts)
 	if err == nil {
 		err = setForkResourceData(repo, d)
 	}
@@ -102,6 +103,8 @@ func resourceGiteaFork() *schema.Resource {
 				Description: "The organization that owns the forked repo",
 			},
 		},
-		Description: "`gitea_fork` manages repository fork",
+		Description: "`gitea_fork` manages repository fork to the current user or an organisation\n" +
+			"Forking a repository to a dedicated user is currently unsupported\n" +
+			"Creating a fork using this resource without an organisation will create the fork in the executors name",
 	}
 }
