@@ -62,7 +62,24 @@ func resourceForkRead(d *schema.ResourceData, meta interface{}) (err error) {
 func resourceForkDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
-	client.DeleteRepo(d.Get(forkOrganization).(string), d.Get(forkRepo).(string))
+	id, err := strconv.ParseInt(d.Id(), 10, 64)
+
+	if err != nil {
+		return err
+	}
+
+	repo, _, err := client.GetRepoByID(id)
+	var resp *gitea.Response
+
+	resp, err = client.DeleteRepo(repo.Owner.UserName, repo.Name)
+
+	if err != nil {
+		if resp.StatusCode == 404 {
+			return
+		} else {
+			return err
+		}
+	}
 
 	return
 }
