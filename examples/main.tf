@@ -95,3 +95,13 @@ resource "gitea_fork" "org2_fork_of_repo1_in_org1" {
   repo         = gitea_repository.repo1_in_org1.name
   organization = gitea_org.org2.name
 }
+
+resource "gitea_token" "test_token" {
+  username = data.gitea_user.me.username
+  name     = "test-token"
+}
+
+output "token" {
+  value = resource.gitea_token.test_token.token
+  sensitive = true
+}

@@ -9,3 +9,7 @@ variable "gitea_token" {
 variable "gitea_mirror_token" {
   
 }
+
+variable "gitea_password" {
+  
+}
