@@ -530,6 +530,18 @@ func resourceGiteaRepository() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
+			"clone_url": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"html_url": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"ssh_url": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 		Description: "`gitea_repository` manages a gitea repository.\n\n" +
 			"Per default this repository will be initializiled with the provided configuration (gitignore, License etc.).\n" +
