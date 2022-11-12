@@ -78,16 +78,6 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
 	var repo *gitea.Repository
-	var resp *gitea.Response
-	var orgRepo bool
-
-	_, resp, err = client.GetOrg(d.Get(repoOwner).(string))
-
-	if resp.StatusCode == 404 {
-		orgRepo = false
-	} else {
-		orgRepo = true
-	}
 
 	if (d.Get(repoMirror)).(bool) {
 
@@ -144,15 +134,11 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 			TrustModel:    "default",
 		}
 
-		if orgRepo {
-			repo, _, err = client.CreateOrgRepo(d.Get(repoOwner).(string), opts)
-		} else {
-			repo, _, err = client.CreateRepo(opts)
-		}
+		repo, _, err = client.CreateOrgRepo(d.Get(repoOwner).(string), opts)
 	}
 
 	if err != nil {
-		return
+		return err
 	}
 
 	err = setRepoResourceData(repo, d)
