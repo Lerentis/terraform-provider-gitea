@@ -92,14 +92,14 @@ Need to exist in the gitea instance
 
 ### Read-Only
 
-- `created` (String)
 - `clone_url` (String)
+- `created` (String)
 - `html_url` (String)
 - `id` (String) The ID of this resource.
-- `ssh_url` (String)
 - `permission_admin` (Boolean)
 - `permission_pull` (Boolean)
 - `permission_push` (Boolean)
+- `ssh_url` (String)
 - `updated` (String)
 
 
