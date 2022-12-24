@@ -30,6 +30,7 @@ steps:
   - name: build
     image: goreleaser/goreleaser
     commands:
+      - curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin v0.64.0
       - goreleaser build --snapshot
     when:
       event:
@@ -59,6 +60,7 @@ steps:
       GPG_PRIVATE_KEY_BASE64:
         from_secret: GPG_PRIVATE_KEY_BASE64
     commands:
+      - curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin v0.64.0
       - apk add gpg-agent
       - gpg-agent --daemon --default-cache-ttl 7200
       - echo $GPG_PRIVATE_KEY_BASE64 | base64 -d | gpg --import --batch --no-tty
