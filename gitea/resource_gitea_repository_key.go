@@ -24,11 +24,11 @@ func resourceRepoKeyIdParts(d *schema.ResourceData) (bool, int64, int64, error) 
 
 	repoId, err := strconv.ParseInt(parts[0], 10, 64)
 	if err != nil {
-		return true, 0, 0, err
+		return false, 0, 0, err
 	}
 	keyId, err := strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
-		return true, 0, 0, err
+		return false, 0, 0, err
 	}
 	return true, repoId, keyId, err
 }

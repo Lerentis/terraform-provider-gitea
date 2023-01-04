@@ -16,6 +16,15 @@ Every key needs a unique name and unique key, i.e. no key can be added twice to 
 ## Example Usage
 
 ```terraform
+terraform {
+  required_providers {
+    tls = {
+      source = "hashicorp/tls"
+      version = "4.0.4"
+    }
+  }
+}
+
 resource "tls_private_key" "example" {
   type = "RSA"
   rsa_bits = 4096
