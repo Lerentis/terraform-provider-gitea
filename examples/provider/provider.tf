@@ -2,7 +2,7 @@ terraform {
   required_providers {
     gitea = {
       source = "Lerentis/gitea"
-      version = "0.11.1"
+      version = "0.11.2"
     }
   }
 }

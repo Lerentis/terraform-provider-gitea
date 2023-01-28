@@ -101,6 +101,24 @@ resource "gitea_token" "test_token" {
   name     = "test-token"
 }
 
+resource "gitea_repository" "test_existing_user" {
+  username     = "testuser2"
+  name         = "testExistingUser"
+  private      = true
+  issue_labels = "Default"
+  license      = "MIT"
+  gitignores   = "Go"
+}
+
+//resource "gitea_repository" "test_bs_user" {
+//  username     = "manualTest"
+//  name         = "testBullshitUser"
+//  private      = true
+//  issue_labels = "Default"
+//  license      = "MIT"
+//  gitignores   = "Go"
+//}
+
 output "token" {
   value = resource.gitea_token.test_token.token
   sensitive = true

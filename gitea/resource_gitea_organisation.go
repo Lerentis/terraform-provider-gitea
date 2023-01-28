@@ -58,7 +58,8 @@ func resourceOrgRead(d *schema.ResourceData, meta interface{}) (err error) {
 	org, err = searchOrgByClientId(client, id)
 
 	if err != nil {
-		return err
+		d.SetId("")
+		return nil
 	}
 
 	err = setOrgResourceData(org, d)

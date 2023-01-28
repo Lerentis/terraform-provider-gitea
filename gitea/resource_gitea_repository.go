@@ -1,6 +1,7 @@
 package gitea
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -48,6 +49,34 @@ const (
 	migrationLFSEndpoint         string = "migration_lfs_endpoint"
 )
 
+func searchUserByName(c *gitea.Client, name string) (res *gitea.User, err error) {
+	page := 1
+
+	for {
+		users, _, err := c.AdminListUsers(gitea.AdminListUsersOptions{
+			ListOptions: gitea.ListOptions{
+				Page:     page,
+				PageSize: 50,
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if len(users) == 0 {
+			return nil, fmt.Errorf("User with name %s could not be found", name)
+		}
+
+		for _, user := range users {
+			if user.UserName == name {
+				return user, nil
+			}
+		}
+
+		page += 1
+	}
+}
+
 func resourceRepoRead(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
@@ -78,6 +107,20 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
 	var repo *gitea.Repository
+	var resp *gitea.Response
+	var orgRepo bool
+
+	_, resp, err = client.GetOrg(d.Get(repoOwner).(string))
+
+	if resp.StatusCode == 404 {
+		_, err := searchUserByName(client, d.Get(repoOwner).(string))
+		if err != nil {
+			return errors.New(fmt.Sprintf("Creation of repository cound not proceed as owner %s is not present in gitea", d.Get(repoOwner).(string)))
+		}
+		orgRepo = false
+	} else {
+		orgRepo = true
+	}
 
 	if (d.Get(repoMirror)).(bool) {
 
@@ -134,7 +177,11 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 			TrustModel:    "default",
 		}
 
-		repo, _, err = client.CreateOrgRepo(d.Get(repoOwner).(string), opts)
+		if orgRepo {
+			repo, _, err = client.CreateOrgRepo(d.Get(repoOwner).(string), opts)
+		} else {
+			repo, _, err = client.AdminCreateRepo(d.Get(repoOwner).(string), opts)
+		}
 	}
 
 	if err != nil {
