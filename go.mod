@@ -5,7 +5,7 @@ go 1.18
 require (
 	code.gitea.io/sdk/gitea v0.15.1
 	github.com/hashicorp/terraform-plugin-docs v0.14.1
-	github.com/hashicorp/terraform-plugin-sdk/v2 v2.26.0
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.26.1
 )
 
 require (
