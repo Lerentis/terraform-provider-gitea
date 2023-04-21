@@ -7,6 +7,7 @@ description: |-
   Per default this repository will be initializiled with the provided configuration (gitignore, License etc.).
   If the username property is set to a organisation name, the provider will try to look if this organisation exists and create the repository under the organisation scope.
   Repository migrations have some properties that are not available to regular repositories. These are all prefixed with migration_.
+  Codeberg.org does currently not allow mirrors to be created. See FAQ Section of CodeBerg for more information: https://docs.codeberg.org/getting-started/faq/#why-am-i-not-allowed-to-set-up-an-automatic-mirror
 ---
 
 # gitea_repository (Resource)
@@ -17,6 +18,7 @@ Per default this repository will be initializiled with the provided configuratio
 If the `username` property is set to a organisation name, the provider will try to look if this organisation exists and create the repository under the organisation scope.
 
 Repository migrations have some properties that are not available to regular repositories. These are all prefixed with `migration_`.
+Codeberg.org does currently not allow mirrors to be created. See FAQ Section of CodeBerg for more information: https://docs.codeberg.org/getting-started/faq/#why-am-i-not-allowed-to-set-up-an-automatic-mirror
 
 ## Example Usage
 

@@ -1,11 +1,14 @@
 package gitea
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"code.gitea.io/sdk/gitea"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -108,14 +111,20 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 
 	var repo *gitea.Repository
 	var resp *gitea.Response
-	var orgRepo bool
+	var orgRepo, hasAdmin bool
 
 	_, resp, err = client.GetOrg(d.Get(repoOwner).(string))
 
 	if resp.StatusCode == 404 {
 		_, err := searchUserByName(client, d.Get(repoOwner).(string))
 		if err != nil {
-			return errors.New(fmt.Sprintf("Creation of repository cound not proceed as owner %s is not present in gitea", d.Get(repoOwner).(string)))
+			if strings.Contains(err.Error(), "could not be found") {
+				return errors.New(fmt.Sprintf("Creation of repository cound not proceed as owner %s is not present in gitea", d.Get(repoOwner).(string)))
+			}
+			tflog.Warn(context.Background(), "Error query for users. Assuming missing permissions and proceding with user permissions")
+			hasAdmin = false
+		} else {
+			hasAdmin = true
 		}
 		orgRepo = false
 	} else {
@@ -180,7 +189,11 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 		if orgRepo {
 			repo, _, err = client.CreateOrgRepo(d.Get(repoOwner).(string), opts)
 		} else {
-			repo, _, err = client.AdminCreateRepo(d.Get(repoOwner).(string), opts)
+			if hasAdmin {
+				repo, _, err = client.AdminCreateRepo(d.Get(repoOwner).(string), opts)
+			} else {
+				repo, _, err = client.CreateRepo(opts)
+			}
 		}
 	}
 
@@ -580,6 +593,8 @@ func resourceGiteaRepository() *schema.Resource {
 			"Per default this repository will be initializiled with the provided configuration (gitignore, License etc.).\n" +
 			"If the `username` property is set to a organisation name, the provider will try to look if this organisation exists " +
 			"and create the repository under the organisation scope.\n\n" +
-			"Repository migrations have some properties that are not available to regular repositories. These are all prefixed with `migration_`.",
+			"Repository migrations have some properties that are not available to regular repositories. These are all prefixed with `migration_`.\n" +
+			"Codeberg.org does currently not allow mirrors to be created. See FAQ Section of CodeBerg for more information: " +
+			"https://docs.codeberg.org/getting-started/faq/#why-am-i-not-allowed-to-set-up-an-automatic-mirror",
 	}
 }
