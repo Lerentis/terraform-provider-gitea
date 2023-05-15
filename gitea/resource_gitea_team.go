@@ -234,7 +234,7 @@ func setTeamResourceData(team *gitea.Team, d *schema.ResourceData) (err error) {
 	d.Set(TeamPermissions, string(team.Permission))
 	d.Set(TeamIncludeAllReposFlag, team.IncludesAllRepositories)
 	d.Set(TeamUnits, d.Get(TeamUnits).(string))
-	d.Set(TeamOrg, d.Get(TeamOrg).(string))
+	d.Set(TeamOrg, team.Organization.UserName)
 	d.Set(TeamMembers, d.Get(TeamMembers))
 	d.Set(TeamRepositories, d.Get(TeamRepositories))
 	return
@@ -247,7 +247,7 @@ func resourceGiteaTeam() *schema.Resource {
 		Update: resourceTeamUpdate,
 		Delete: resourceTeamDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
