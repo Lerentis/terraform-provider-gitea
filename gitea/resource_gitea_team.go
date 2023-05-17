@@ -2,6 +2,7 @@ package gitea
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -347,6 +348,7 @@ func setTeamRepositories(team *gitea.Team, d *schema.ResourceData, meta interfac
 				},
 			})
 			if err != nil {
+				log.Printf("[ERROR] Error listeng team repositories: %s", err)
 				return
 			}
 			if len(existingRepositories) == 0 {
@@ -360,6 +362,7 @@ func setTeamRepositories(team *gitea.Team, d *schema.ResourceData, meta interfac
 				} else {
 					_, err = client.RemoveTeamRepository(team.ID, org, exr.Name)
 					if err != nil {
+						log.Printf("[ERROR] Error removing team repository %q: %s", exr.Name, err)
 						return
 					}
 				}
@@ -373,6 +376,7 @@ func setTeamRepositories(team *gitea.Team, d *schema.ResourceData, meta interfac
 		if flag {
 			_, err = client.AddTeamRepository(team.ID, org, repo)
 			if err != nil {
+				log.Printf("[ERROR] Error adding team repository %q: %s", repo, err)
 				return
 			}
 		}
