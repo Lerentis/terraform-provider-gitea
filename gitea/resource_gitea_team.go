@@ -1,8 +1,8 @@
 package gitea
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
@@ -108,7 +108,7 @@ func resourceTeamCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	if !includeAllRepos {
 		err = setTeamRepositories(team, d, meta, false)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -195,7 +195,7 @@ func resourceTeamUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 	if !includeAllRepos {
 		err = setTeamRepositories(team, d, meta, true)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -348,8 +348,7 @@ func setTeamRepositories(team *gitea.Team, d *schema.ResourceData, meta interfac
 				},
 			})
 			if err != nil {
-				log.Printf("[ERROR] Error listeng team repositories: %s", err)
-				return
+				return errors.New(fmt.Sprintf("[ERROR] Error listeng team repositories: %s", err))
 			}
 			if len(existingRepositories) == 0 {
 				break
@@ -362,8 +361,7 @@ func setTeamRepositories(team *gitea.Team, d *schema.ResourceData, meta interfac
 				} else {
 					_, err = client.RemoveTeamRepository(team.ID, org, exr.Name)
 					if err != nil {
-						log.Printf("[ERROR] Error removing team repository %q: %s", exr.Name, err)
-						return
+						return errors.New(fmt.Sprintf("[ERROR] Error removing team repository %q: %s", exr.Name, err))
 					}
 				}
 			}
@@ -376,8 +374,7 @@ func setTeamRepositories(team *gitea.Team, d *schema.ResourceData, meta interfac
 		if flag {
 			_, err = client.AddTeamRepository(team.ID, org, repo)
 			if err != nil {
-				log.Printf("[ERROR] Error adding team repository %q: %s", repo, err)
-				return
+				return errors.New(fmt.Sprintf("[ERROR] Error adding team repository %q: %s", repo, err))
 			}
 		}
 	}
