@@ -41,7 +41,7 @@ func resourceTeamRead(d *schema.ResourceData, meta interface{}) (err error) {
 		}
 	}
 
-	err = setTeamResourceData(team, d)
+	err = setTeamResourceData(team, d, meta)
 
 	return
 }
@@ -112,7 +112,7 @@ func resourceTeamCreate(d *schema.ResourceData, meta interface{}) (err error) {
 		}
 	}
 
-	err = setTeamResourceData(team, d)
+	err = setTeamResourceData(team, d, meta)
 
 	return
 }
@@ -201,7 +201,7 @@ func resourceTeamUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 
 	team, _, _ = client.GetTeam(id)
 
-	err = setTeamResourceData(team, d)
+	err = setTeamResourceData(team, d, meta)
 
 	return
 }
@@ -226,7 +226,13 @@ func resourceTeamDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	return
 }
 
-func setTeamResourceData(team *gitea.Team, d *schema.ResourceData) (err error) {
+func setTeamResourceData(team *gitea.Team, d *schema.ResourceData, meta interface{}) (err error) {
+	client := meta.(*gitea.Client)
+	if err := client.CheckServerVersionConstraint(">= 1.19.4"); err != nil {
+		d.Set(TeamOrg, d.Get(TeamOrg).(string))
+	} else {
+		d.Set(TeamOrg, team.Organization.UserName)
+	}
 	d.SetId(fmt.Sprintf("%d", team.ID))
 	d.Set(TeamCreateRepoFlag, team.CanCreateOrgRepo)
 	d.Set(TeamDescription, team.Description)
@@ -234,7 +240,6 @@ func setTeamResourceData(team *gitea.Team, d *schema.ResourceData) (err error) {
 	d.Set(TeamPermissions, string(team.Permission))
 	d.Set(TeamIncludeAllReposFlag, team.IncludesAllRepositories)
 	d.Set(TeamUnits, d.Get(TeamUnits).(string))
-	d.Set(TeamOrg, team.Organization.UserName)
 	d.Set(TeamMembers, d.Get(TeamMembers))
 	d.Set(TeamRepositories, d.Get(TeamRepositories))
 	return
