@@ -5,7 +5,7 @@ KERNEL?=$$(uname -s | tr '[:upper:]' '[:lower:]')
 
 GOFMT ?= gofmt -s
 
-VERSION = 0.12.3
+VERSION = 0.13.0
 
 test: fmt-check
 	go test -i $(TEST) || exit 1
