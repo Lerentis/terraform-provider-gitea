@@ -131,14 +131,14 @@ func resourceRepoCreate(d *schema.ResourceData, meta interface{}) (err error) {
 		orgRepo = true
 	}
 
-	if (d.Get(repoMirror)).(bool) {
+	var cloneAddr string
+	if d.Get(migrationCloneAddresse).(string) != "" {
+		cloneAddr = d.Get(migrationCloneAddresse).(string)
+	} else {
+		cloneAddr = d.Get(migrationCloneAddress).(string)
+	}
 
-		var cloneAddr string
-		if d.Get(migrationCloneAddresse).(string) != "" {
-			cloneAddr = d.Get(migrationCloneAddresse).(string)
-		} else {
-			cloneAddr = d.Get(migrationCloneAddress).(string)
-		}
+	if cloneAddr != "" {
 
 		opts := gitea.MigrateRepoOption{
 			RepoName:       d.Get(repoName).(string),
