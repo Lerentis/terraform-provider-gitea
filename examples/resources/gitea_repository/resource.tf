@@ -16,3 +16,13 @@ resource "gitea_repository" "mirror" {
   migration_service            = "gitea"
   migration_service_auth_token = var.gitea_mirror_token
 }
+
+resource "gitea_repository" "clone" {
+  username                     = "lerentis"
+  name                         = "terraform-provider-gitea-clone"
+  description                  = "Clone of Terraform Provider"
+  mirror                       = false
+  migration_clone_address      = "https://git.uploadfilter24.eu/lerentis/terraform-provider-gitea.git"
+  migration_service            = "gitea"
+  migration_service_auth_token = var.gitea_clone_token
+}
