@@ -8,10 +8,11 @@ import (
 )
 
 const (
-	oauth2KeyName         string = "name"
-	oauth2KeyRedirectURIs string = "redirect_uris"
-	oauth2KeyClientId     string = "client_id"
-	oauth2KeyClientSecret string = "client_secret"
+	oauth2KeyName               string = "name"
+	oauth2KeyConfidentialClient string = "confidential_client"
+	oauth2KeyRedirectURIs       string = "redirect_uris"
+	oauth2KeyClientId           string = "client_id"
+	oauth2KeyClientSecret       string = "client_secret"
 )
 
 func resourceGiteaOauthApp() *schema.Resource {
@@ -36,6 +37,12 @@ func resourceGiteaOauthApp() *schema.Resource {
 					Type: schema.TypeString,
 				},
 				Description: "Accepted redirect URIs",
+			},
+			oauth2KeyConfidentialClient: {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "If set to false, it will be a public client (PKCE will be required)",
 			},
 			oauth2KeyClientId: {
 				Type:        schema.TypeString,
