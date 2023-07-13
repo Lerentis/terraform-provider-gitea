@@ -96,9 +96,16 @@ func resourceOauth2AppUpcreate(d *schema.ResourceData, meta interface{}) (err er
 		return fmt.Errorf("attribute %s must be set and must be a string", oauth2KeyName)
 	}
 
+	confidentialClient, confidentialClientOk := d.Get(oauth2KeyConfidentialClient).(bool)
+
+	if !confidentialClientOk {
+		return fmt.Errorf("attribute %s must be set and must be a bool", oauth2KeyConfidentialClient)
+	}
+
 	opts := gitea.CreateOauth2Option{
-		Name:         name,
-		RedirectURIs: redirectURIs,
+		Name:               name,
+		ConfidentialClient: confidentialClient,
+		RedirectURIs:       redirectURIs,
 	}
 
 	var oauth2 *gitea.Oauth2
@@ -183,9 +190,10 @@ func setOAuth2ResourceData(app *gitea.Oauth2, d *schema.ResourceData) (err error
 	d.SetId(app.ClientID)
 
 	for k, v := range map[string]interface{}{
-		oauth2KeyName:         app.Name,
-		oauth2KeyRedirectURIs: schema.NewSet(schema.HashString, CollapseStringList(app.RedirectURIs)),
-		oauth2KeyClientId:     app.ClientID,
+		oauth2KeyName:               app.Name,
+		oauth2KeyConfidentialClient: app.ConfidentialClient,
+		oauth2KeyRedirectURIs:       schema.NewSet(schema.HashString, CollapseStringList(app.RedirectURIs)),
+		oauth2KeyClientId:           app.ClientID,
 	} {
 		err = d.Set(k, v)
 		if err != nil {
