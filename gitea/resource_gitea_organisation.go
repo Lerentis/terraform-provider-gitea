@@ -16,6 +16,7 @@ const (
 	orgLocation               string = "location"
 	orgVisibility             string = "visibility"
 	RepoAdminChangeTeamAccess string = "repo_admin_change_team_access"
+	orgRepos                  string = "org_repos"
 )
 
 // might come in handy if we want to stick to numeric IDs
@@ -48,6 +49,32 @@ func searchOrgByClientId(c *gitea.Client, id int64) (res *gitea.Organization, er
 	}
 }
 
+func getAllOrgRepos(c *gitea.Client, orgName string) (repos []string, err error) {
+	page := 1
+
+	for {
+		repoBuffer, _, err := c.ListOrgRepos(orgName, gitea.ListOrgReposOptions{
+			ListOptions: gitea.ListOptions{
+				Page:     page,
+				PageSize: 50,
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if len(repoBuffer) == 0 {
+			return repos, nil
+		}
+
+		for _, repo := range repoBuffer {
+			repos = append(repos, repo.Name)
+		}
+
+		page += 1
+	}
+}
+
 func resourceOrgRead(d *schema.ResourceData, meta interface{}) (err error) {
 	client := meta.(*gitea.Client)
 
@@ -62,7 +89,8 @@ func resourceOrgRead(d *schema.ResourceData, meta interface{}) (err error) {
 		return nil
 	}
 
-	err = setOrgResourceData(org, d)
+	repos, _ := getAllOrgRepos(client, org.UserName)
+	err = setOrgResourceData(org, d, &repos)
 
 	return
 }
@@ -85,7 +113,8 @@ func resourceOrgCreate(d *schema.ResourceData, meta interface{}) (err error) {
 		return
 	}
 
-	err = setOrgResourceData(org, d)
+	repos, _ := getAllOrgRepos(client, org.UserName)
+	err = setOrgResourceData(org, d, &repos)
 
 	return
 }
@@ -118,7 +147,8 @@ func resourceOrgUpdate(d *schema.ResourceData, meta interface{}) (err error) {
 
 	org, resp, err = client.GetOrg(d.Get(orgName).(string))
 
-	err = setOrgResourceData(org, d)
+	repos, _ := getAllOrgRepos(client, org.UserName)
+	err = setOrgResourceData(org, d, &repos)
 
 	return
 }
@@ -141,7 +171,7 @@ func resourceOrgDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	return
 }
 
-func setOrgResourceData(org *gitea.Organization, d *schema.ResourceData) (err error) {
+func setOrgResourceData(org *gitea.Organization, d *schema.ResourceData, repos *[]string) (err error) {
 	d.SetId(fmt.Sprintf("%d", org.ID))
 	d.Set("name", org.UserName)
 	d.Set("full_name", org.FullName)
@@ -150,6 +180,7 @@ func setOrgResourceData(org *gitea.Organization, d *schema.ResourceData) (err er
 	d.Set("website", org.Website)
 	d.Set("location", org.Location)
 	d.Set("visibility", org.Visibility)
+	d.Set("repos", repos)
 
 	return
 }
@@ -210,6 +241,13 @@ func resourceGiteaOrg() *schema.Resource {
 				Optional:    true,
 				Default:     "public",
 				Description: "Flag is this organisation should be publicly visible or not.",
+			},
+			"repos": {
+				Type:        schema.TypeList,
+				Required:    false,
+				Computed:    true,
+				Description: "List of all Repositories that are part of this organisation",
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 		},
 		Description: "`gitea_org` manages a gitea organisation.\n\n" +
