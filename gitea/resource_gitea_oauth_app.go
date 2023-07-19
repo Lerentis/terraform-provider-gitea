@@ -113,7 +113,7 @@ func resourceOauth2AppUpcreate(d *schema.ResourceData, meta interface{}) (err er
 	if d.IsNewResource() {
 		oauth2, _, err = client.CreateOauth2(opts)
 	} else {
-		oauth2, err := searchOauth2AppByClientId(client, d.Id())
+		oauth2, err = searchOauth2AppByClientId(client, d.Id())
 
 		if err != nil {
 			return err
