@@ -123,3 +123,15 @@ output "token" {
   value = resource.gitea_token.test_token.token
   sensitive = true
 }
+
+data "gitea_repo" "org_repos" {
+  name = each.key
+  username = gitea_org.org1.name
+  for_each = {
+    for repo in resource.gitea_org.org1.repos : repo => repo
+  }
+}
+
+output "repos" {
+  value = data.gitea_repo.org_repos["repo1-in-org1"].clone_url
+}
