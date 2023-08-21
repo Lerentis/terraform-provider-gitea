@@ -13,6 +13,7 @@ const (
 	TokenName      string = "name"
 	TokenHash      string = "token"
 	TokenLastEight string = "last_eight"
+	TokenScope     string = "scope"
 )
 
 func searchTokenById(c *gitea.Client, id int64) (res *gitea.AccessToken, err error) {
@@ -49,6 +50,10 @@ func resourceTokenCreate(d *schema.ResourceData, meta interface{}) (err error) {
 
 	var opt gitea.CreateAccessTokenOption
 	opt.Name = d.Get(TokenName).(string)
+	opt.Scopes = []gitea.AccessTokenScope{}
+	for _, scope := range d.Get(TokenScope).([]interface{}) {
+		opt.Scopes = append(opt.Scopes, gitea.AccessTokenScope(scope.(string)))
+	}
 
 	token, _, err := client.CreateAccessToken(opt)
 
@@ -102,6 +107,11 @@ func setTokenResourceData(token *gitea.AccessToken, d *schema.ResourceData) (err
 
 	d.SetId(fmt.Sprintf("%d", token.ID))
 	d.Set(TokenName, token.Name)
+	var scopeList []string
+	for _, scope := range token.Scopes {
+		scopeList = append(scopeList, string(scope))
+	}
+	d.Set(TokenScope, scopeList)
 	if token.Token != "" {
 		d.Set(TokenHash, token.Token)
 	}
@@ -136,6 +146,15 @@ func resourceGiteaToken() *schema.Resource {
 				Computed:    true,
 				Sensitive:   true,
 				Description: "The actual Access Token",
+			},
+			"scope": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional:    true,
+				ForceNew:    true,
+				Description: "The token scope",
 			},
 			"last_eight": {
 				Type:     schema.TypeString,
