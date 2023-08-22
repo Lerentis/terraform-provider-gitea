@@ -13,6 +13,7 @@ const (
 	TokenName      string = "name"
 	TokenHash      string = "token"
 	TokenLastEight string = "last_eight"
+	TokenScope     string = "scope"
 )
 
 func searchTokenById(c *gitea.Client, id int64) (res *gitea.AccessToken, err error) {
@@ -50,13 +51,20 @@ func resourceTokenCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	var opt gitea.CreateAccessTokenOption
 	opt.Name = d.Get(TokenName).(string)
 
+	if err := client.CheckServerVersionConstraint(">= 1.20.0"); err != nil {
+		opt.Scopes = []gitea.AccessTokenScope{}
+		for _, scope := range d.Get(TokenScope).([]interface{}) {
+			opt.Scopes = append(opt.Scopes, gitea.AccessTokenScope(scope.(string)))
+		}
+	}
+
 	token, _, err := client.CreateAccessToken(opt)
 
 	if err != nil {
 		return err
 	}
 
-	err = setTokenResourceData(token, d)
+	err = setTokenResourceData(token, d, meta)
 
 	return
 }
@@ -75,7 +83,7 @@ func resourceTokenRead(d *schema.ResourceData, meta interface{}) (err error) {
 		return err
 	}
 
-	err = setTokenResourceData(token, d)
+	err = setTokenResourceData(token, d, meta)
 
 	return
 }
@@ -98,10 +106,21 @@ func resourceTokenDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	return
 }
 
-func setTokenResourceData(token *gitea.AccessToken, d *schema.ResourceData) (err error) {
+func setTokenResourceData(token *gitea.AccessToken, d *schema.ResourceData, meta interface{}) (err error) {
+
+	client := meta.(*gitea.Client)
 
 	d.SetId(fmt.Sprintf("%d", token.ID))
 	d.Set(TokenName, token.Name)
+
+	if err := client.CheckServerVersionConstraint(">= 1.20.0"); err != nil {
+		var scopeList []string
+		for _, scope := range token.Scopes {
+			scopeList = append(scopeList, string(scope))
+		}
+		d.Set(TokenScope, scopeList)
+	}
+
 	if token.Token != "" {
 		d.Set(TokenHash, token.Token)
 	}
@@ -136,6 +155,15 @@ func resourceGiteaToken() *schema.Resource {
 				Computed:    true,
 				Sensitive:   true,
 				Description: "The actual Access Token",
+			},
+			"scope": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional:    true,
+				ForceNew:    true,
+				Description: "The Access Token scope (all,public-only,read:activitypub,write:activitypub,read:admin,write:admin,read:misc,write:misc,read:notification,write:notification,read:organization,write:organization,read:package,write:package,read:issue,write:issue,read:repository,write:repository,read:user,write:user)",
 			},
 			"last_eight": {
 				Type:     schema.TypeString,
