@@ -58,6 +58,10 @@ output "token" {
 - `name` (String) The name of the Access Token
 - `username` (String) The owner of the Access Token
 
+### Optional
+
+- `scope` (List of String) The Access Token scope (all,public-only,read:activitypub,write:activitypub,read:admin,write:admin,read:misc,write:misc,read:notification,write:notification,read:organization,write:organization,read:package,write:package,read:issue,write:issue,read:repository,write:repository,read:user,write:user)
+
 ### Read-Only
 
 - `id` (String) The ID of this resource.

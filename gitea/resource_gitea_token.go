@@ -50,9 +50,12 @@ func resourceTokenCreate(d *schema.ResourceData, meta interface{}) (err error) {
 
 	var opt gitea.CreateAccessTokenOption
 	opt.Name = d.Get(TokenName).(string)
-	opt.Scopes = []gitea.AccessTokenScope{}
-	for _, scope := range d.Get(TokenScope).([]interface{}) {
-		opt.Scopes = append(opt.Scopes, gitea.AccessTokenScope(scope.(string)))
+
+	if err := client.CheckServerVersionConstraint(">= 1.20.0"); err != nil {
+		opt.Scopes = []gitea.AccessTokenScope{}
+		for _, scope := range d.Get(TokenScope).([]interface{}) {
+			opt.Scopes = append(opt.Scopes, gitea.AccessTokenScope(scope.(string)))
+		}
 	}
 
 	token, _, err := client.CreateAccessToken(opt)
@@ -61,7 +64,7 @@ func resourceTokenCreate(d *schema.ResourceData, meta interface{}) (err error) {
 		return err
 	}
 
-	err = setTokenResourceData(token, d)
+	err = setTokenResourceData(token, d, meta)
 
 	return
 }
@@ -80,7 +83,7 @@ func resourceTokenRead(d *schema.ResourceData, meta interface{}) (err error) {
 		return err
 	}
 
-	err = setTokenResourceData(token, d)
+	err = setTokenResourceData(token, d, meta)
 
 	return
 }
@@ -103,15 +106,21 @@ func resourceTokenDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	return
 }
 
-func setTokenResourceData(token *gitea.AccessToken, d *schema.ResourceData) (err error) {
+func setTokenResourceData(token *gitea.AccessToken, d *schema.ResourceData, meta interface{}) (err error) {
+
+	client := meta.(*gitea.Client)
 
 	d.SetId(fmt.Sprintf("%d", token.ID))
 	d.Set(TokenName, token.Name)
-	var scopeList []string
-	for _, scope := range token.Scopes {
-		scopeList = append(scopeList, string(scope))
+
+	if err := client.CheckServerVersionConstraint(">= 1.20.0"); err != nil {
+		var scopeList []string
+		for _, scope := range token.Scopes {
+			scopeList = append(scopeList, string(scope))
+		}
+		d.Set(TokenScope, scopeList)
 	}
-	d.Set(TokenScope, scopeList)
+
 	if token.Token != "" {
 		d.Set(TokenHash, token.Token)
 	}
@@ -154,7 +163,7 @@ func resourceGiteaToken() *schema.Resource {
 				},
 				Optional:    true,
 				ForceNew:    true,
-				Description: "The token scope",
+				Description: "The Access Token scope (all,public-only,read:activitypub,write:activitypub,read:admin,write:admin,read:misc,write:misc,read:notification,write:notification,read:organization,write:organization,read:package,write:package,read:issue,write:issue,read:repository,write:repository,read:user,write:user)",
 			},
 			"last_eight": {
 				Type:     schema.TypeString,
